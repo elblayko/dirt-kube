@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dirt-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dirt-api
+  template:
+    metadata:
+      labels:
+        app: dirt-api
+    spec:
+      containers:
+        - name: dirt-api
+          image: dirt-api:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+---
+
+## ClusterIP Service
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+spec:
+  type: ClusterIP
+  selector:
+    app: dirt-api
+  ports:
+    - port: 3000
+      targetPort: 3000

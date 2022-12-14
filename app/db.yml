@@ -1,0 +1,82 @@
+## Application Deployment
+#
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dirt-db
+spec:
+  selector:
+    matchLabels:
+      app: dirt-db
+  serviceName: dirt-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dirt-db
+    spec:
+      containers:
+        - name: dirt-db
+          image: mcr.microsoft.com/mssql/server:2022-latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 1433
+              name: dirt-db
+          volumeMounts:
+            - name: db-data
+              mountPath: /usr/share/nginx/html
+          env:
+            - name: MSSQL_SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dirt-db
+                  key: mssql-sa-password
+            - name: ACCEPT_EULA
+              valueFrom:
+                configMapKeyRef:
+                  name: dirt-db
+                  key: accept-eula
+  volumeClaimTemplates:
+    - metadata:
+        name: db-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
+---
+
+## ClusterIP Service
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+spec:
+  type: ClusterIP
+  selector:
+    app: dirt-db
+  ports:
+    - port: 1433
+      targetPort: 1433
+---
+
+## Application Configuration
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dirt-db
+data:
+  accept-eula: "Y"
+---
+
+## Secret Configuration
+#
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dirt-db
+type: Opaque
+data:
+  mssql-sa-password: eW91clN0cm9uZyghKVBhc3N3b3Jk

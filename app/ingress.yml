@@ -1,0 +1,31 @@
+## Network Ingress Service
+#
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dirt
+  labels:
+    name: dirt
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: ["dirt.af.mil"]
+      secretName: dirt.af.mil
+  rules:
+    - host: dirt.af.mil
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: app
+                port:
+                  number: 3000
+          - pathType: Prefix
+            path: "/api"
+            backend:
+              service:
+                name: api
+                port:
+                  number: 3000
