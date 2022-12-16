@@ -5,7 +5,7 @@ kind: Deployment
 metadata:
   name: dirt-app
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: dirt-app
