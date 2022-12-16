@@ -1,0 +1,327 @@
+## Database Schema
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dirt-db-files
+data:
+  schema.sql: |
+    USE [master]
+    GO
+    /****** Object:  Database [MyDirtDB]    Script Date: 12/16/2022 8:44:51 AM ******/
+    CREATE DATABASE [MyDirtDB]
+    CONTAINMENT = NONE
+    ON  PRIMARY
+    ( NAME = N'MyFailureDB', FILENAME = N'/var/opt/mssql/data/MyFailureDB.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+    LOG ON
+    ( NAME = N'MyFailureDB_log', FILENAME = N'/var/opt/mssql/data/MyFailureDB_log.ldf' , SIZE = 73728KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+    WITH CATALOG_COLLATION = DATABASE_DEFAULT
+    GO
+    ALTER DATABASE [MyDirtDB] SET COMPATIBILITY_LEVEL = 150
+    GO
+    IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+    begin
+    EXEC [MyDirtDB].[dbo].[sp_fulltext_database] @action = 'enable'
+    end
+    GO
+    ALTER DATABASE [MyDirtDB] SET ANSI_NULL_DEFAULT OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET ANSI_NULLS OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET ANSI_PADDING OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET ANSI_WARNINGS OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET ARITHABORT OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET AUTO_CLOSE OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET AUTO_SHRINK OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET AUTO_UPDATE_STATISTICS ON
+    GO
+    ALTER DATABASE [MyDirtDB] SET CURSOR_CLOSE_ON_COMMIT OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET CURSOR_DEFAULT  GLOBAL
+    GO
+    ALTER DATABASE [MyDirtDB] SET CONCAT_NULL_YIELDS_NULL OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET NUMERIC_ROUNDABORT OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET QUOTED_IDENTIFIER OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET RECURSIVE_TRIGGERS OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET  DISABLE_BROKER
+    GO
+    ALTER DATABASE [MyDirtDB] SET AUTO_UPDATE_STATISTICS_ASYNC OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET DATE_CORRELATION_OPTIMIZATION OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET TRUSTWORTHY OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET ALLOW_SNAPSHOT_ISOLATION OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET PARAMETERIZATION SIMPLE
+    GO
+    ALTER DATABASE [MyDirtDB] SET READ_COMMITTED_SNAPSHOT OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET HONOR_BROKER_PRIORITY OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET RECOVERY FULL
+    GO
+    ALTER DATABASE [MyDirtDB] SET  MULTI_USER
+    GO
+    ALTER DATABASE [MyDirtDB] SET PAGE_VERIFY CHECKSUM
+    GO
+    ALTER DATABASE [MyDirtDB] SET DB_CHAINING OFF
+    GO
+    ALTER DATABASE [MyDirtDB] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF )
+    GO
+    ALTER DATABASE [MyDirtDB] SET TARGET_RECOVERY_TIME = 60 SECONDS
+    GO
+    ALTER DATABASE [MyDirtDB] SET DELAYED_DURABILITY = DISABLED
+    GO
+    ALTER DATABASE [MyDirtDB] SET ACCELERATED_DATABASE_RECOVERY = OFF
+    GO
+    EXEC sys.sp_db_vardecimal_storage_format N'MyDirtDB', N'ON'
+    GO
+    ALTER DATABASE [MyDirtDB] SET QUERY_STORE = OFF
+    GO
+    USE [MyDirtDB]
+    GO
+    /****** Object:  Table [dbo].[tblDocs]    Script Date: 12/16/2022 8:44:51 AM ******/
+    SET ANSI_NULLS ON
+    GO
+    SET QUOTED_IDENTIFIER ON
+    GO
+    CREATE TABLE [dbo].[tblDocs](
+      [DocID] [int] IDENTITY(1,1) NOT NULL,
+      [Doc] [varbinary](max) NOT NULL,
+      [DocTypeID] [int] NOT NULL,
+      [DocWhere] [varchar](50) NULL,
+    CONSTRAINT [PK_tblDocs] PRIMARY KEY CLUSTERED
+    (
+      [DocID] ASC
+    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+    ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+    GO
+    /****** Object:  Table [dbo].[tblDocTypes]    Script Date: 12/16/2022 8:44:51 AM ******/
+    SET ANSI_NULLS ON
+    GO
+    SET QUOTED_IDENTIFIER ON
+    GO
+    CREATE TABLE [dbo].[tblDocTypes](
+      [DocTypeID] [int] NOT NULL,
+      [DocTypeName] [varchar](20) NOT NULL,
+      [DocTemplate] [varbinary](max) NOT NULL,
+    CONSTRAINT [PK_tblDocTypes] PRIMARY KEY CLUSTERED
+    (
+      [DocTypeID] ASC
+    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+    ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+    GO
+    /****** Object:  Table [dbo].[tblLogin]    Script Date: 12/16/2022 8:44:51 AM ******/
+    SET ANSI_NULLS ON
+    GO
+    SET QUOTED_IDENTIFIER ON
+    GO
+    CREATE TABLE [dbo].[tblLogin](
+      [UserID] [int] NOT NULL,
+      [UserLoginID] [varchar](15) NOT NULL,
+      [UserPassword] [varchar](20) NOT NULL,
+    CONSTRAINT [PK_tblLogin] PRIMARY KEY CLUSTERED
+    (
+      [UserID] ASC
+    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+    ) ON [PRIMARY]
+    GO
+    /****** Object:  Table [dbo].[tblOrgPersons]    Script Date: 12/16/2022 8:44:51 AM ******/
+    SET ANSI_NULLS ON
+    GO
+    SET QUOTED_IDENTIFIER ON
+    GO
+    CREATE TABLE [dbo].[tblOrgPersons](
+      [OrgPersonID] [int] IDENTITY(1,1) NOT NULL,
+      [OrgPersonFirstName] [varchar](20) NOT NULL,
+      [OrgPersonLastName] [varchar](20) NOT NULL,
+      [OrgRankID] [int] NOT NULL,
+    CONSTRAINT [PK_tblOrgPersons] PRIMARY KEY CLUSTERED
+    (
+      [OrgPersonID] ASC
+    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+    ) ON [PRIMARY]
+    GO
+    /****** Object:  Table [dbo].[tblOrgs]    Script Date: 12/16/2022 8:44:51 AM ******/
+    SET ANSI_NULLS ON
+    GO
+    SET QUOTED_IDENTIFIER ON
+    GO
+    CREATE TABLE [dbo].[tblOrgs](
+      [OrgID] [int] NOT NULL,
+      [OrgName] [varchar](20) NOT NULL,
+      [OrgPersonID] [int] NULL,
+    CONSTRAINT [PK_tblOrgs] PRIMARY KEY CLUSTERED
+    (
+      [OrgID] ASC
+    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+    ) ON [PRIMARY]
+    GO
+    /****** Object:  Table [dbo].[tblRank]    Script Date: 12/16/2022 8:44:51 AM ******/
+    SET ANSI_NULLS ON
+    GO
+    SET QUOTED_IDENTIFIER ON
+    GO
+    CREATE TABLE [dbo].[tblRank](
+      [RankID] [int] NOT NULL,
+      [RankType] [varchar](20) NOT NULL,
+    CONSTRAINT [PK_tblRank] PRIMARY KEY CLUSTERED
+    (
+      [RankID] ASC
+    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+    ) ON [PRIMARY]
+    GO
+    /****** Object:  Table [dbo].[tblRoles]    Script Date: 12/16/2022 8:44:51 AM ******/
+    SET ANSI_NULLS ON
+    GO
+    SET QUOTED_IDENTIFIER ON
+    GO
+    CREATE TABLE [dbo].[tblRoles](
+      [RoleID] [int] NOT NULL,
+      [RoleType] [varchar](20) NOT NULL,
+    CONSTRAINT [PK_tblRoles] PRIMARY KEY CLUSTERED
+    (
+      [RoleID] ASC
+    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+    ) ON [PRIMARY]
+    GO
+    /****** Object:  Table [dbo].[tblSubordinate]    Script Date: 12/16/2022 8:44:51 AM ******/
+    SET ANSI_NULLS ON
+    GO
+    SET QUOTED_IDENTIFIER ON
+    GO
+    CREATE TABLE [dbo].[tblSubordinate](
+      [SubordinateID] [int] IDENTITY(1,1) NOT NULL,
+      [SubFirstName] [varchar](20) NOT NULL,
+      [SubMiddleName] [varchar](20) NULL,
+      [SubLastName] [varchar](20) NOT NULL,
+    CONSTRAINT [PK_tblSubordinate] PRIMARY KEY CLUSTERED
+    (
+      [SubordinateID] ASC
+    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+    ) ON [PRIMARY]
+    GO
+    /****** Object:  Table [dbo].[tblUser]    Script Date: 12/16/2022 8:44:51 AM ******/
+    SET ANSI_NULLS ON
+    GO
+    SET QUOTED_IDENTIFIER ON
+    GO
+    CREATE TABLE [dbo].[tblUser](
+      [UserID] [int] IDENTITY(1,1) NOT NULL,
+      [HashKey] [uniqueidentifier] ROWGUIDCOL  NOT NULL,
+      [UserFirstName] [varchar](20) NULL,
+      [UserMiddleName] [varchar](20) NOT NULL,
+      [UserLastName] [varchar](20) NULL,
+      [UserEMail] [varchar](30) NULL,
+      [RoleID] [int] NOT NULL,
+      [OrganizationID] [int] NOT NULL,
+      [RankID] [int] NOT NULL,
+    CONSTRAINT [PK_tblUser] PRIMARY KEY CLUSTERED
+    (
+      [UserID] ASC
+    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+    ) ON [PRIMARY]
+    GO
+    /****** Object:  Table [dbo].[tblXRefUserDocs]    Script Date: 12/16/2022 8:44:51 AM ******/
+    SET ANSI_NULLS ON
+    GO
+    SET QUOTED_IDENTIFIER ON
+    GO
+    CREATE TABLE [dbo].[tblXRefUserDocs](
+      [UserID] [int] NOT NULL,
+      [DocID] [int] NOT NULL
+    ) ON [PRIMARY]
+    GO
+    /****** Object:  Table [dbo].[tblXRefUserSubordinate]    Script Date: 12/16/2022 8:44:51 AM ******/
+    SET ANSI_NULLS ON
+    GO
+    SET QUOTED_IDENTIFIER ON
+    GO
+    CREATE TABLE [dbo].[tblXRefUserSubordinate](
+      [UserID] [int] NULL,
+      [SubordinateID] [int] NULL
+    ) ON [PRIMARY]
+    GO
+    INSERT [dbo].[tblOrgs] ([OrgID], [OrgName], [OrgPersonID]) VALUES (1, N'552ACNS', NULL)
+    GO
+    INSERT [dbo].[tblRank] ([RankID], [RankType]) VALUES (1, N'E1')
+    INSERT [dbo].[tblRank] ([RankID], [RankType]) VALUES (2, N'E2')
+    GO
+    INSERT [dbo].[tblRoles] ([RoleID], [RoleType]) VALUES (1, N'Admin')
+    GO
+    SET IDENTITY_INSERT [dbo].[tblUser] ON
+
+    INSERT [dbo].[tblUser] ([UserID], [HashKey], [UserFirstName], [UserMiddleName], [UserLastName], [UserEMail], [RoleID], [OrganizationID], [RankID]) VALUES (2, N'a38c2798-67f8-4ed2-8c6d-5422dd9de180', N'Super', N'S', N'User', N'superuser@us.af.mil', 1, 1, 1)
+    SET IDENTITY_INSERT [dbo].[tblUser] OFF
+    GO
+    ALTER TABLE [dbo].[tblUser] ADD  CONSTRAINT [DF_tblUser_HashKey]  DEFAULT (newid()) FOR [HashKey]
+    GO
+    ALTER TABLE [dbo].[tblDocs]  WITH NOCHECK ADD  CONSTRAINT [FK_tblDocs_tblDocTypes] FOREIGN KEY([DocTypeID])
+    REFERENCES [dbo].[tblDocTypes] ([DocTypeID])
+    GO
+    ALTER TABLE [dbo].[tblDocs] NOCHECK CONSTRAINT [FK_tblDocs_tblDocTypes]
+    GO
+    ALTER TABLE [dbo].[tblLogin]  WITH CHECK ADD  CONSTRAINT [FK_tblLogin_tblUser] FOREIGN KEY([UserID])
+    REFERENCES [dbo].[tblUser] ([UserID])
+    GO
+    ALTER TABLE [dbo].[tblLogin] CHECK CONSTRAINT [FK_tblLogin_tblUser]
+    GO
+    ALTER TABLE [dbo].[tblOrgPersons]  WITH CHECK ADD  CONSTRAINT [FK_tblOrgPersons_tblRank] FOREIGN KEY([OrgRankID])
+    REFERENCES [dbo].[tblRank] ([RankID])
+    GO
+    ALTER TABLE [dbo].[tblOrgPersons] CHECK CONSTRAINT [FK_tblOrgPersons_tblRank]
+    GO
+    ALTER TABLE [dbo].[tblOrgs]  WITH NOCHECK ADD  CONSTRAINT [FK_tblOrgs_tblOrgPersons] FOREIGN KEY([OrgPersonID])
+    REFERENCES [dbo].[tblOrgPersons] ([OrgPersonID])
+    GO
+    ALTER TABLE [dbo].[tblOrgs] NOCHECK CONSTRAINT [FK_tblOrgs_tblOrgPersons]
+    GO
+    ALTER TABLE [dbo].[tblUser]  WITH CHECK ADD  CONSTRAINT [FK_tblUser_tblOrgs] FOREIGN KEY([OrganizationID])
+    REFERENCES [dbo].[tblOrgs] ([OrgID])
+    GO
+    ALTER TABLE [dbo].[tblUser] CHECK CONSTRAINT [FK_tblUser_tblOrgs]
+    GO
+    ALTER TABLE [dbo].[tblUser]  WITH CHECK ADD  CONSTRAINT [FK_tblUser_tblRank] FOREIGN KEY([RankID])
+    REFERENCES [dbo].[tblRank] ([RankID])
+    GO
+    ALTER TABLE [dbo].[tblUser] CHECK CONSTRAINT [FK_tblUser_tblRank]
+    GO
+    ALTER TABLE [dbo].[tblUser]  WITH CHECK ADD  CONSTRAINT [FK_tblUser_tblRoles] FOREIGN KEY([RoleID])
+    REFERENCES [dbo].[tblRoles] ([RoleID])
+    GO
+    ALTER TABLE [dbo].[tblUser] CHECK CONSTRAINT [FK_tblUser_tblRoles]
+    GO
+    ALTER TABLE [dbo].[tblXRefUserDocs]  WITH NOCHECK ADD  CONSTRAINT [FK_tblXRefUserDocs_tblDocs] FOREIGN KEY([DocID])
+    REFERENCES [dbo].[tblDocs] ([DocID])
+    GO
+    ALTER TABLE [dbo].[tblXRefUserDocs] NOCHECK CONSTRAINT [FK_tblXRefUserDocs_tblDocs]
+    GO
+    ALTER TABLE [dbo].[tblXRefUserDocs]  WITH CHECK ADD  CONSTRAINT [FK_tblXRefUserDocs_tblUser] FOREIGN KEY([UserID])
+    REFERENCES [dbo].[tblUser] ([UserID])
+    GO
+    ALTER TABLE [dbo].[tblXRefUserDocs] CHECK CONSTRAINT [FK_tblXRefUserDocs_tblUser]
+    GO
+    ALTER TABLE [dbo].[tblXRefUserSubordinate]  WITH NOCHECK ADD  CONSTRAINT [FK_tblXRefUserSubordinate_tblSubordinate] FOREIGN KEY([SubordinateID])
+    REFERENCES [dbo].[tblSubordinate] ([SubordinateID])
+    GO
+    ALTER TABLE [dbo].[tblXRefUserSubordinate] NOCHECK CONSTRAINT [FK_tblXRefUserSubordinate_tblSubordinate]
+    GO
+    ALTER TABLE [dbo].[tblXRefUserSubordinate]  WITH CHECK ADD  CONSTRAINT [FK_tblXRefUserSubordinate_tblUser] FOREIGN KEY([UserID])
+    REFERENCES [dbo].[tblUser] ([UserID])
+    GO
+    ALTER TABLE [dbo].[tblXRefUserSubordinate] CHECK CONSTRAINT [FK_tblXRefUserSubordinate_tblUser]
+    GO
+    USE [master]
+    GO
+    ALTER DATABASE [MyDirtDB] SET  READ_WRITE
+    GO
