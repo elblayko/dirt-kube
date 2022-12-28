@@ -45,9 +45,11 @@ kubectl apply -f resources/
 kubectl rollout status deploy -n ingress-nginx ingress-nginx-controller
 ```
 
-Deploy the application:
+Deploy the application, wait until fully deployed.
 ```bash
 kubectl apply -f app/
+kubectl rollout status deploy dirt-app dirt-api
+kubectl rollout status statefulset dirt-db
 ```
 
 Create a tunnel into the cluster, as the load balancer listens on privileged ports.
@@ -64,11 +66,14 @@ Example:
 ```
 NAME                       TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
 ingress-nginx-controller   LoadBalancer   10.100.128.169   127.0.0.1     80:30754/TCP,443:31838/TCP   4m47s
+
+C:\Windows\system32\drivers\etc\hosts, /etc/hosts, etc.
+127.0.0.1 dirt.af.mil
 ```
 
-Hosts:
-```
-127.0.0.1 dirt.af.mil
+On initial start only, import the database schema:
+```bash
+kubectl exec -it dirt-db-0 -- bash -c "/opt/mssql-tools/bin/sqlcmd -U sa -i /var/opt/mssql/schema/schema.sql"
 ```
 
 The application will be accessable at `https://dirt.af.mil/`
