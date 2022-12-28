@@ -1,15 +1,19 @@
 # Dirt-Kube
-Kubernetes deployment manifests for DevJam DIRT application.
+Kubernetes manifests for DevJam MyDiRT application.
 
-### Prerequisites
-Build the *dirt-app* and *dirt-api* images within their respective repos with the dirt-*:latest tag.
+# Software Requirements
 
-```bash
-docker build --pull --rm -t dirt-app:latest .
-docker build --pull --rm -t dirt-api:latest .
-```
+Required:
+- [Minikube](https://minikube.sigs.k8s.io/docs/start/)
+- [Compatible driver](https://minikube.sigs.k8s.io/docs/drivers/)
 
-Generate a self-signed certificate.
+Optional:
+- [Kubectl](https://kubernetes.io/docs/tasks/tools/)
+
+In absense of `kubectl`, replace all commands with `minikube kubectl`.
+
+# Installation
+Generate a self-signed TLS certificate, install on the local machine if desired.
 ```bash
 openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
     -keyout dirt.key \
@@ -18,22 +22,51 @@ openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
     -addext "subjectAltName = DNS:dirt.af.mil"
 ```
 
-Create a Kubernetes TLS secret from the generated certificates, install on the local machine if desired.
+Start the Minikube service:
 ```bash
-kubectl create secret tls dirt.af.mil --key dirt.key --cert dirt.crt
+minikube start
 ```
 
-# Deployment
-
-Install the NGINX Ingress Controller:
+Create a Kubernetes TLS secret from the generated certificate.
 ```bash
-kubectl apply -f resources/nginx-ingress-1.5.1.yaml
+kubectl create secret tls dirt.af.mil \
+    --key dirt.key --cert dirt.crt
 ```
 
-Deploy the full stack:
+Load the MS-SQL Server schema from the *dirt-db* repo into a Kubernetes config map.  Replace `$HOME/projects/dirt-db` with the path of the Git repository.
+```bash
+kubectl create configmap dirt-db-files --from-file \
+    schema.sql=$HOME/projects/dirt-db/schema.sql
+```
+
+Deploy the ingress controller, wait until fully deployed.
+```bash
+kubectl apply -f resources/
+kubectl rollout status deploy -n ingress-nginx ingress-nginx-controller
+```
+
+Deploy the application:
 ```bash
 kubectl apply -f app/
 ```
+
+Create a tunnel into the cluster, as the load balancer listens on privileged ports.
+```bash
+minikube tunnel
+```
+
+Get the IP address of the LoadBalancer and add to operating system `hosts` file.  Note the `EXTERNAL-IP` column:
+```bash
+kubectl get svc -n ingress-nginx ingress-nginx-controller
+```
+
+Example:
+```
+NAME                       TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+ingress-nginx-controller   LoadBalancer   10.100.128.169   127.0.0.1     80:30754/TCP,443:31838/TCP   4m47s
+```
+
+The application will be accessable at `https://dirt.af.mil/`
 
 # Maintainance
 
@@ -58,3 +91,7 @@ Restart the NGINX Ingress Controller:
 ```bash
 kubectl -n ingress-nginx rollout restart deployment ingress-nginx-controller
 ```
+
+## Change Service Passwords
+
+In progress.
