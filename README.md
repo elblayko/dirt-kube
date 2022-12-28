@@ -66,6 +66,11 @@ NAME                       TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)
 ingress-nginx-controller   LoadBalancer   10.100.128.169   127.0.0.1     80:30754/TCP,443:31838/TCP   4m47s
 ```
 
+Hosts:
+```
+127.0.0.1 dirt.af.mil
+```
+
 The application will be accessable at `https://dirt.af.mil/`
 
 # Maintainance
