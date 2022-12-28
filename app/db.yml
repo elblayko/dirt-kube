@@ -21,8 +21,8 @@ spec:
             name: dirt-db-files
       containers:
         - name: dirt-db
-          image: dirt-db:latest
-          imagePullPolicy: Never
+          image: ghcr.io/elblayko/dirt-db:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1433
               name: dirt-db
