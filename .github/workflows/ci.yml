@@ -1,0 +1,39 @@
+name: CI
+on:
+  - push
+  - pull_request
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Start Minikube
+        uses: medyagh/setup-minikube@latest
+
+      - name: Check Minikube status
+        run: minikube status
+
+      - name: Generate TLS certificate and key
+        run: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout dirt.key -out dirt.crt -subj "/CN=dirt.af.mil/O=dirt.af.mil" -addext "subjectAltName = DNS:dirt.af.mil"
+
+      - name: Create TLS secret
+        run: kubectl create secret tls dirt-tls --cert=dirt.crt --key=dirt.key
+
+      - name: Create Database configmap
+        run: kubectl create configmap dirt-db-files --from-literal schema.sql="$(curl -s https://raw.githubusercontent.com/elblayko/dirt-db/master/schema.sql)"
+
+      - name: Deploy NGINX Ingress Controller
+        run: |
+          kubectl apply -f resources/nginx-ingress-1.5.1.yaml
+          kubectl rollout status deploy -n ingress-nginx ingress-nginx-controller
+
+      - name: Deploy MyDiRT application
+        run: |
+          kubectl apply -f app/
+          kubectl rollout status deploy dirt-app dirt-api
+          kubectl rollout status statefulset dirt-db
+
+      # - name: Import database schema
+      #   run: kubectl exec dirt-db-0 -- bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -i /var/opt/mssql/schema/schema.sql -P "yourStrong(!)Password"'
