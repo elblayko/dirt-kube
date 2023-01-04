@@ -22,10 +22,23 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "500m"
+          env:
+            - name: DIRT_DB_CONSTRING
+              valueFrom:
+                configMapKeyRef:
+                  name: dirt-api
+                  key: db-constring
+            - name: DIRT_DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: dirt-api
+                  key: db-user
+            - name: DIRT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dirt-db
+                  key: mssql-sa-password
 ---
-
-## ClusterIP Service
-#
 apiVersion: v1
 kind: Service
 metadata:
@@ -37,3 +50,11 @@ spec:
   ports:
     - port: 3000
       targetPort: 3000
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: dirt-api
+data:
+  db-constring: "dbi:ODBC:Driver=ODBC Driver 18 for SQL Server;Database=MyDirtDB;Server=dirt-db,1433;TrustServerCertificate=yes"
+  db-user: "sa"
