@@ -1,5 +1,3 @@
-## API Deployment
-#
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,7 +14,7 @@ spec:
     spec:
       containers:
         - name: dirt-api
-          image: ghcr.io/fehho/dirt-api:latest
+          image: ghcr.io/fehho/dirt-api:latest@sha256:d1d5d6eeeb230a25a338aaade5ff8725cf73778a595df9dc40b9fd1a80557f3e
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
