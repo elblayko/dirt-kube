@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: dirt-app
-          image: ghcr.io/fehho/dirt-app:latest
+          image: ghcr.io/fehho/dirt-app:latest@sha256:667117bb58c9966be5a0f2bcf68bab25af56a34ac7a4c0a55b216a20ebd8b8c8
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
