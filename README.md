@@ -32,23 +32,23 @@ openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
 
 Create a Kubernetes TLS secret from the generated certificate.
 ```bash
-kubectl create secret tls dirt.af.mil \
-    --key dirt.key --cert dirt.crt
+kubectl create secret tls dirt.af.mil --key dirt.key --cert dirt.crt
 ```
 
 Load the MS-SQL Server schema from the *dirt-db* repo into a Kubernetes config map.  Replace `$HOME/projects/dirt-db` with the path of the Git repository.
 ```bash
-kubectl create configmap dirt-db-files --from-file \
-    schema.sql=$HOME/projects/dirt-db/schema.sql
+kubectl create configmap dirt-db-config \
+    --from-file schema="$HOME/projects/dirt-db/schema.sql" \
+    --from-literal accept-eula="Y"
 ```
 
-Deploy the ingress controller, wait until fully deployed.
+Deploy the ingress controller, wait until fully deployed. (Approximately 1 minute)
 ```bash
 kubectl apply -f resources/
 kubectl rollout status deploy -n ingress-nginx ingress-nginx-controller
 ```
 
-Deploy the application, wait until fully deployed.
+Deploy the application, wait until fully deployed. (Approximately 2 minutes)
 ```bash
 kubectl apply -f app/
 kubectl rollout status deploy dirt-app dirt-api
@@ -87,7 +87,7 @@ The application will be accessable at `https://dirt.af.mil/`
 
 Generate new certificates:
 ```bash
-openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -keyout dirt.key \
     -out dirt.crt \
     -subj "/CN=dirt.af.mil/O=dirt.af.mil" \
