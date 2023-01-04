@@ -15,6 +15,12 @@ Optional:
 In absense of `kubectl`, replace all commands with `minikube kubectl`.
 
 # Installation
+
+Start the Minikube service:
+```bash
+minikube start
+```
+
 Generate a self-signed TLS certificate, install on the local machine if desired.
 ```bash
 openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
@@ -22,11 +28,6 @@ openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
     -out dirt.crt \
     -subj "/CN=dirt.af.mil/O=dirt.af.mil" \
     -addext "subjectAltName = DNS:dirt.af.mil"
-```
-
-Start the Minikube service:
-```bash
-minikube start
 ```
 
 Create a Kubernetes TLS secret from the generated certificate.
