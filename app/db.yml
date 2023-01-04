@@ -1,5 +1,3 @@
-## Application Deployment
-#
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -15,33 +13,36 @@ spec:
       labels:
         app: dirt-db
     spec:
-      volumes:
-        - name: dirt-db-files
-          configMap:
-            name: dirt-db-files
       containers:
         - name: dirt-db
-          image: ghcr.io/elblayko/dirt-db:latest@sha256:6ae3c67e471e7a881fe82ce50957eb3d0c756f8c4412e314263651ba105d8782
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 1433
-              name: dirt-db
-          volumeMounts:
-            - name: db-data
-              mountPath: /var/opt/mssql/data
-            - name: dirt-db-files
-              mountPath: /var/opt/mssql/schema
           env:
             - name: MSSQL_SA_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: dirt-db
+                  name: dirt-db-secrets
                   key: mssql-sa-password
             - name: ACCEPT_EULA
               valueFrom:
                 configMapKeyRef:
-                  name: dirt-db
+                  name: dirt-db-config
                   key: accept-eula
+          image: ghcr.io/elblayko/dirt-db:latest@sha256:6ae3c67e471e7a881fe82ce50957eb3d0c756f8c4412e314263651ba105d8782
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: dirt-db
+              containerPort: 1433
+          volumeMounts:
+            - name: db-data
+              mountPath: /var/opt/mssql/data
+            - name: dirt-db-config
+              mountPath: /var/opt/mssql/schema
+      volumes:
+        - name: dirt-db-config
+          configMap:
+            name: dirt-db-config
+            items:
+              - key: schema
+                path: schema.sql
   volumeClaimTemplates:
     - metadata:
         name: db-data
@@ -51,8 +52,6 @@ spec:
           requests:
             storage: 10Gi
 ---
-## ClusterIP Service
-#
 apiVersion: v1
 kind: Service
 metadata:
@@ -65,21 +64,10 @@ spec:
     - port: 1433
       targetPort: 1433
 ---
-## Secret Configuration
-#
 apiVersion: v1
 kind: Secret
 metadata:
-  name: dirt-db
+  name: dirt-db-secrets
 type: Opaque
 data:
   mssql-sa-password: eW91clN0cm9uZyghKVBhc3N3b3Jk # echo -n 'yourStrong(!)Password' | base64
----
-## Application Configuration
-#
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: dirt-db
-data:
-  accept-eula: "Y"

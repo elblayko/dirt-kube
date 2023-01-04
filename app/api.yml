@@ -14,6 +14,22 @@ spec:
     spec:
       containers:
         - name: dirt-api
+          env:
+            - name: DIRT_DB_CONSTRING
+              valueFrom:
+                configMapKeyRef:
+                  name: dirt-api-config
+                  key: db-constring
+            - name: DIRT_DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: dirt-api-config
+                  key: db-user
+            - name: DIRT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dirt-db-secrets
+                  key: mssql-sa-password
           image: ghcr.io/fehho/dirt-api:latest@sha256:d1d5d6eeeb230a25a338aaade5ff8725cf73778a595df9dc40b9fd1a80557f3e
           imagePullPolicy: IfNotPresent
           ports:
@@ -22,22 +38,6 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "500m"
-          env:
-            - name: DIRT_DB_CONSTRING
-              valueFrom:
-                configMapKeyRef:
-                  name: dirt-api
-                  key: db-constring
-            - name: DIRT_DB_USER
-              valueFrom:
-                configMapKeyRef:
-                  name: dirt-api
-                  key: db-user
-            - name: DIRT_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: dirt-db
-                  key: mssql-sa-password
 ---
 apiVersion: v1
 kind: Service
@@ -54,7 +54,7 @@ spec:
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: dirt-api
+  name: dirt-api-config
 data:
   db-constring: "dbi:ODBC:Driver=ODBC Driver 18 for SQL Server;Database=MyDirtDB;Server=dirt-db,1433;TrustServerCertificate=yes"
   db-user: "sa"

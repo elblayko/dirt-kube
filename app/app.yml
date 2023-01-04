@@ -1,5 +1,3 @@
-## Application Deployment
-#
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,9 +23,6 @@ spec:
               memory: "128Mi"
               cpu: "500m"
 ---
-
-## ClusterIP Service
-#
 apiVersion: v1
 kind: Service
 metadata:
