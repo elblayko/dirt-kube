@@ -1,3 +1,5 @@
+[![CI](https://github.com/elblayko/dirt-kube/actions/workflows/ci.yml/badge.svg)](https://github.com/elblayko/dirt-kube/actions/workflows/ci.yml)
+
 # Dirt-Kube
 Kubernetes manifests for DevJam MyDiRT application.
 
