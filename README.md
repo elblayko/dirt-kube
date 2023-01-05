@@ -14,7 +14,7 @@ Optional:
 
 In absense of `kubectl`, replace all commands with `minikube kubectl`.
 
-# TL;DR
+# TL;DR (Recommended)
 
 ```bash
 curl -sfL https://raw.githubusercontent.com/elblayko/dirt-kube/master/minikube-deploy.sh | sh -s -- dev
@@ -29,7 +29,7 @@ minikube start
 
 Generate a self-signed TLS certificate, install on the local machine if desired.
 ```bash
-openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -keyout dirt.key \
     -out dirt.crt \
     -subj "/CN=dirt.af.mil/O=dirt.af.mil" \

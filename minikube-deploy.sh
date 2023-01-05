@@ -16,28 +16,29 @@ if [ ! -x "$(command -v kubectl)" ]; then
     alias kubectl='minikube kubectl --'
 fi;
 
-echo "Starting minikube..."
+echo "✨ Starting minikube..."
 minikube start
 
-echo "Creating TLS certificate for DIRT..."
+echo "✨ Creating TLS certificate for DIRT..."
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -keyout dirt.key \
     -out dirt.crt \
     -subj "/CN=dirt.af.mil/O=dirt.af.mil" \
     -addext "subjectAltName = DNS:dirt.af.mil"
 
-echo "Creating secret for DIRT TLS certificate..."
+echo "✨ Creating secret for DIRT TLS certificate..."
 kubectl create secret tls dirt.af.mil --key dirt.key --cert dirt.crt
 
-echo "Creating configmap for DIRT database schema..."
+echo "✨ Creating configmap for DIRT database schema..."
 kubectl create configmap dirt-db-config \
     --from-literal schema="$(curl -s https://raw.githubusercontent.com/elblayko/dirt-db/master/schema.sql)" \
     --from-literal accept-eula="Y"
 
-echo "Deploying Ingress controller... (about a minute)"
+echo "✨ Deploying Ingress controller... (about a minute)"
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.5.1/deploy/static/provider/cloud/deploy.yaml
+kubectl rollout status deployment -n ingress-nginx ingress-nginx-controller
 
-echo "Deploying DIRT... (about 2 minutes)"
+echo "✨ Deploying DIRT... (about 2 minutes)"
 kubectl apply -f https://raw.githubusercontent.com/elblayko/dirt-kube/master/app/api.yml
 kubectl apply -f https://raw.githubusercontent.com/elblayko/dirt-kube/master/app/app.yml
 kubectl apply -f https://raw.githubusercontent.com/elblayko/dirt-kube/master/app/db.yml
@@ -49,7 +50,10 @@ kubectl rollout status statefulset dirt-db
 echo "Sleeping for 30 seconds to allow SQL server to fully start..."
 sleep 30
 
-echo "Importing DIRT database schema..."
+echo "✨ Sleeping for 30 seconds to allow SQL server to fully start..."
+sleep 30
+
+echo "✨ Importing DIRT database schema..."
 kubectl exec -i statefulset/dirt-db -- bash -c "/opt/mssql-tools/bin/sqlcmd -U sa -i /var/opt/mssql/schema/schema.sql -P $DEFAULT_MSSQL_PASSWORD"
 
 if [ "$1" = 'dev' ]; then
@@ -57,7 +61,7 @@ if [ "$1" = 'dev' ]; then
     kubectl exec -i deployment/dirt-api -- bash -c "perl script/insert_dummy"
 fi;
 
-echo "Done!"
+echo "🎉 Done!"
 
 cat << EOF
 Next steps:
