@@ -70,4 +70,4 @@ metadata:
   name: dirt-db-secrets
 type: Opaque
 data:
-  mssql-sa-password: eW91clN0cm9uZyghKVBhc3N3b3Jk # echo -n 'yourStrong(!)Password' | base64
+  mssql-sa-password: UGFzc3cwcmQ/ # echo -n 'Passw0rd?' | base64
