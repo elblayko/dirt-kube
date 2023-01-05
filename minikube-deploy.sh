@@ -35,11 +35,14 @@ kubectl create configmap dirt-db-config \
     --from-literal accept-eula="Y"
 
 echo "Deploying Ingress controller..."
-kubectl apply -f resources/
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.5.1/deploy/static/provider/cloud/deploy.yaml
 kubectl rollout status deploy -n ingress-nginx ingress-nginx-controller
 
 echo "Deploying DIRT..."
-kubectl apply -f app/
+kubectl apply -f https://raw.githubusercontent.com/elblayko/dirt-kube/master/app/api.yml
+kubectl apply -f https://raw.githubusercontent.com/elblayko/dirt-kube/master/app/app.yml
+kubectl apply -f https://raw.githubusercontent.com/elblayko/dirt-kube/master/app/db.yml
+kubectl apply -f https://raw.githubusercontent.com/elblayko/dirt-kube/master/app/ingress.yml
 kubectl rollout status deploy dirt-app dirt-api
 kubectl rollout status statefulset dirt-db
 
