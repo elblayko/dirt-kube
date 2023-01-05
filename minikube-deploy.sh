@@ -42,7 +42,7 @@ echo "✨ Deploying DIRT... (about 2 minutes)"
 kubectl apply -f https://raw.githubusercontent.com/elblayko/dirt-kube/master/app/api.yml
 kubectl apply -f https://raw.githubusercontent.com/elblayko/dirt-kube/master/app/app.yml
 kubectl apply -f https://raw.githubusercontent.com/elblayko/dirt-kube/master/app/db.yml
-kubectl apply -f app/ingress.yml
+kubectl apply -f https://raw.githubusercontent.com/elblayko/dirt-kube/master/app/ingress.yml
 kubectl rollout status deployment dirt-api
 kubectl rollout status deployment dirt-app
 kubectl rollout status statefulset dirt-db
