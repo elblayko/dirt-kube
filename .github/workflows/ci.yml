@@ -15,13 +15,21 @@ jobs:
         run: minikube status
 
       - name: Generate TLS certificate and key
-        run: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout dirt.key -out dirt.crt -subj "/CN=dirt.af.mil/O=dirt.af.mil" -addext "subjectAltName = DNS:dirt.af.mil"
+        run: |
+          openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+            -keyout dirt.key \
+            -out dirt.crt \
+            -subj "/CN=dirt.af.mil/O=dirt.af.mil" \
+            -addext "subjectAltName = DNS:dirt.af.mil"
 
       - name: Create TLS secret
         run: kubectl create secret tls dirt-tls --cert=dirt.crt --key=dirt.key
 
       - name: Create Database configmap
-        run: kubectl create configmap dirt-db-files --from-literal schema.sql="$(curl -s https://raw.githubusercontent.com/elblayko/dirt-db/master/schema.sql)"
+        run: |
+          kubectl create configmap dirt-db-config \
+            --from-literal schema="$(curl -s https://raw.githubusercontent.com/elblayko/dirt-db/master/schema.sql)" \
+            --from-literal accept-eula="Y"
 
       - name: Deploy NGINX Ingress Controller
         run: |
