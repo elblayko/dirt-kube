@@ -35,10 +35,10 @@ Create a Kubernetes TLS secret from the generated certificate.
 kubectl create secret tls dirt.af.mil --key dirt.key --cert dirt.crt
 ```
 
-Load the MS-SQL Server schema from the *dirt-db* repo into a Kubernetes config map.  Replace `$HOME/projects/dirt-db` with the path of the Git repository.
+Load the MS-SQL Server schema from the *dirt-db* repo into a Kubernetes config map.
 ```bash
 kubectl create configmap dirt-db-config \
-    --from-file schema="$HOME/projects/dirt-db/schema.sql" \
+    --from-literal schema="$(curl -s https://raw.githubusercontent.com/elblayko/dirt-db/master/schema.sql)" \
     --from-literal accept-eula="Y"
 ```
 
