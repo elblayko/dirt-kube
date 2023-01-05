@@ -14,6 +14,12 @@ Optional:
 
 In absense of `kubectl`, replace all commands with `minikube kubectl`.
 
+# TL;DR
+
+```bash
+curl -sfL https://raw.githubusercontent.com/elblayko/dirt-kube/master/minikube-deploy.sh | sh -
+```
+
 # Installation
 
 Start the Minikube service:
