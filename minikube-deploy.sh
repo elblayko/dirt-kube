@@ -47,9 +47,6 @@ kubectl rollout status deployment dirt-api
 kubectl rollout status deployment dirt-app
 kubectl rollout status statefulset dirt-db
 
-echo "Sleeping for 30 seconds to allow SQL server to fully start..."
-sleep 30
-
 echo "✨ Sleeping for 30 seconds to allow SQL server to fully start..."
 sleep 30
 
