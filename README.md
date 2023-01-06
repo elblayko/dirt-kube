@@ -14,7 +14,7 @@ Optional:
 
 In absense of `kubectl`, replace all commands with `minikube kubectl`.
 
-# TL;DR (Recommended)
+# TL;DR
 
 Without dummy data:
 ```bash
@@ -23,104 +23,27 @@ curl -sfL https://raw.githubusercontent.com/elblayko/dirt-kube/master/minikube-d
 
 With dummy data:
 ```bash
-curl -sfL https://raw.githubusercontent.com/elblayko/dirt-kube/master/minikube-deploy.sh | sh -s -- dev
+curl -sfL https://raw.githubusercontent.com/elblayko/dirt-kube/master/minikube-deploy.sh | sh -
+curl -sfL https://raw.githubusercontent.com/elblayko/dirt-kube/master/minikube-deploy.sh | sh -s -- --with-dummy-data --no-tls
 ```
 
-# Installation
-
-Start the Minikube service:
-```bash
-minikube start
-```
-
-Generate a self-signed TLS certificate, install on the local machine if desired.
-```bash
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-    -keyout dirt.key \
-    -out dirt.crt \
-    -subj "/CN=dirt.af.mil/O=dirt.af.mil" \
-    -addext "subjectAltName = DNS:dirt.af.mil"
-```
-
-Create a Kubernetes TLS secret from the generated certificate.
-```bash
-kubectl create secret tls dirt.af.mil --key dirt.key --cert dirt.crt
-```
-
-Load the MS-SQL Server schema from the *dirt-db* repo into a Kubernetes config map.
-```bash
-kubectl create configmap dirt-db-config \
-    --from-literal schema="$(curl -s https://raw.githubusercontent.com/elblayko/dirt-db/master/schema.sql)" \
-    --from-literal accept-eula="Y"
-```
-
-Deploy the ingress controller, wait until fully deployed. (Approximately 1 minute)
-```bash
-kubectl apply -f resources/
-kubectl rollout status deploy -n ingress-nginx ingress-nginx-controller
-```
-
-Deploy the application, wait until fully deployed. (Approximately 2 minutes)
-```bash
-kubectl apply -f app/
-kubectl rollout status deploy dirt-app dirt-api
-kubectl rollout status statefulset dirt-db
-```
-
-Create a tunnel into the cluster, as the load balancer listens on privileged ports.
-```bash
-minikube tunnel
-```
-
-Get the IP address of the LoadBalancer and add to operating system `hosts` file.  Note the `EXTERNAL-IP` column:
-```bash
-kubectl get svc -n ingress-nginx ingress-nginx-controller
-```
-
-Example:
-```
-NAME                       TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
-ingress-nginx-controller   LoadBalancer   10.100.128.169   127.0.0.1     80:30754/TCP,443:31838/TCP   4m47s
-
-C:\Windows\system32\drivers\etc\hosts, /etc/hosts, etc.
-127.0.0.1 dirt.af.mil
-```
-
-On initial start only, import the database schema:
-```bash
-kubectl exec -it dirt-db-0 -- bash -c "/opt/mssql-tools/bin/sqlcmd -U sa -i /var/opt/mssql/schema/schema.sql"
-```
-
-The application will be accessable at `https://dirt.af.mil/`
+The application will be accessable at `https://dirt.af.mil/`, the default database credentials are: `sa`, `Passw0rd?`
 
 # Maintainance
 
 ## Regenerate TLS certificates
 
-Generate new certificates:
 ```bash
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -keyout dirt.key \
     -out dirt.crt \
     -subj "/CN=dirt.af.mil/O=dirt.af.mil" \
     -addext "subjectAltName = DNS:dirt.af.mil"
-```
 
-Delete old certificate and upload the new one:
-```bash
 kubectl delete secret dirt.af.mil
 kubectl create secret tls dirt.af.mil --key dirt.key --cert dirt.crt
-```
 
-Restart the NGINX Ingress Controller:
-```bash
 kubectl -n ingress-nginx rollout restart deployment ingress-nginx-controller
-```
-
-## Disable TLS
-
-```bash
-kubectl patch ingress dirt --patch '{"spec": {"tls": null}}'
 ```
 
 ## Change Service Passwords
