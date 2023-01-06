@@ -1,7 +1,7 @@
 [![CI](https://github.com/elblayko/dirt-kube/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/elblayko/dirt-kube/actions/workflows/ci.yml)
 
 # Dirt-Kube
-Kubernetes manifests for DevJam MyDiRT application.
+Kubernetes manifests to hypothetically deploy the 552d Air Control Networks Squadron DevJam *MyDiRT* application to CloudOne or the Joint Warfighting Cloud Capability (JWCC) platform which provides Joint All-Domain Command and Control (JADC2) capabilities.
 
 # Software Requirements
 
