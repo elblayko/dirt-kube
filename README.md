@@ -16,8 +16,8 @@ In absense of `kubectl`, replace all commands with `minikube kubectl`.
 
 # TL;DR
 ```bash
-curl -sfL https://raw.githubusercontent.com/elblayko/dirt-kube/master/minikube-deploy.sh | sh -
-curl -sfL https://raw.githubusercontent.com/elblayko/dirt-kube/master/minikube-deploy.sh | sh -s -- --with-dummy-data --no-tls
+curl -sfL https://raw.githubusercontent.com/elblayko/dirt-kube/master/minikube-deploy.sh | bash -
+curl -sfL https://raw.githubusercontent.com/elblayko/dirt-kube/master/minikube-deploy.sh | bash -s - --with-dummy-data --no-tls
 ```
 
 The application will be accessable at `https://dirt.af.mil/`, the default database credentials are: `sa`, `Passw0rd?`
