@@ -111,6 +111,12 @@ Restart the NGINX Ingress Controller:
 kubectl -n ingress-nginx rollout restart deployment ingress-nginx-controller
 ```
 
+## Disable TLS
+
+```bash
+kubectl patch ingress dirt --patch '{"spec": {"tls": null}}'
+```
+
 ## Change Service Passwords
 
 In progress.
