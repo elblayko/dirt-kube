@@ -16,6 +16,12 @@ In absense of `kubectl`, replace all commands with `minikube kubectl`.
 
 # TL;DR (Recommended)
 
+Without dummy data:
+```bash
+curl -sfL https://raw.githubusercontent.com/elblayko/dirt-kube/master/minikube-deploy.sh | sh -
+```
+
+With dummy data:
 ```bash
 curl -sfL https://raw.githubusercontent.com/elblayko/dirt-kube/master/minikube-deploy.sh | sh -s -- dev
 ```
